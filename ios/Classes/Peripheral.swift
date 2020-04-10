@@ -17,6 +17,7 @@ class Peripheral : NSObject, CBPeripheralManagerDelegate {
     var dataToBeAdvertised: [String: [CBUUID]]!
     
     var shouldStartAdvertise: Bool = false
+    var poweredOn: Bool = false;
     
     override init() {
         super.init()
@@ -28,7 +29,14 @@ class Peripheral : NSObject, CBPeripheralManagerDelegate {
         dataToBeAdvertised = [
             CBAdvertisementDataServiceUUIDsKey : [CBUUID(string: advertiseData.uuid)],
         ]
-        shouldStartAdvertise = true
+        
+        if (poweredOn) {
+            peripheralManager.startAdvertising(dataToBeAdvertised)
+        } else {
+            shouldStartAdvertise = true;
+        }
+        
+
     }
     
     func stop() {
@@ -50,9 +58,13 @@ class Peripheral : NSObject, CBPeripheralManagerDelegate {
     }
     
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-        if (peripheral.state == .poweredOn && shouldStartAdvertise) {
-            peripheralManager.startAdvertising(dataToBeAdvertised)
-            shouldStartAdvertise = false
+        if (peripheral.state == .poweredOn) {
+            self.poweredOn = true;
+            if (shouldStartAdvertise) {
+                peripheralManager.startAdvertising(dataToBeAdvertised)
+                shouldStartAdvertise = false
+
+            }
         }
     }
 }
