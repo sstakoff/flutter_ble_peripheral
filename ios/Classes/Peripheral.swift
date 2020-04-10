@@ -18,12 +18,16 @@ class Peripheral : NSObject, CBPeripheralManagerDelegate {
     
     var shouldStartAdvertise: Bool = false
     
+    override init() {
+        super.init()
+        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
+    }
+    
     
     func start(advertiseData: AdvertiseData) {
         dataToBeAdvertised = [
             CBAdvertisementDataServiceUUIDsKey : [CBUUID(string: advertiseData.uuid)],
         ]
-        peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
         shouldStartAdvertise = true
     }
     
